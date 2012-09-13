@@ -1,0 +1,79 @@
+#!/usr/bin/php
+<?php
+/**
+ * Minicode - only need to need!
+ *
+ * An open source hyper-light web application agile development framework
+ *
+ * @package       Minicode
+ * @author        Wanglong
+ * @copyright     Copyright (c) 2012 - 2013, Minicode.
+ * @license       http://minicode.org/docs/license
+ * @link          http://minicode.org
+ */
+
+/**
+ *--------------------------------------------------------------------------
+ * Cli global constant predefined
+ *--------------------------------------------------------------------------
+ */
+
+define('SYSROOT', dirname(dirname(__FILE__)));
+define('SYSPATH', SYSROOT . DIRECTORY_SEPARATOR);
+define('SYSDIR', substr(SYSROOT, strrpos(SYSROOT, DIRECTORY_SEPARATOR) + 1));
+define('PWD', getcwd());
+define('VERSION', '1.0.1');
+
+/**
+ *--------------------------------------------------------------------------
+ * Cli command universal function
+ *--------------------------------------------------------------------------
+ */
+
+function in_argv(/* options */) {
+    global $argv;
+    $options = func_get_args();
+    foreach ($options as $val) {
+        if(in_array($val, $argv)) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+/**
+ *--------------------------------------------------------------------------
+ * Cli operation control
+ *--------------------------------------------------------------------------
+ * 
+ * According to different command line parameters, implement 
+ * different operating.
+ */
+
+$commands = array('migrate', 'generate');
+
+if ( ! in_array($argv[1], $commands)) {
+    if (in_argv('-v', '--version')) {
+        die('Minicode ' . VERSION . '  - only need to need! (cil) (built: 09/13/2012)'. chr(10) . 'An open source hyper-light web application agile development framework');
+    }
+
+    create_project();
+}
+
+/**
+ *--------------------------------------------------------------------------
+ * Cli operation process
+ *--------------------------------------------------------------------------
+ * 
+ * Specific operation function
+ */
+
+function create_project() {
+    global $argv;
+    include SYSPATH . 'core/MC_CLI_Project.php';
+    $project = new MC_CLI_Project($argv[1]);
+    $project->create();
+}
+
+// END mc cli
+// By Minicode
