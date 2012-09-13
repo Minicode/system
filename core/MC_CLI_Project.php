@@ -102,6 +102,8 @@ class MC_CLI_Project {
             $this->mkdir('controllers');
 
             $this->copy('config.tpl', 'config/config.php');
+            $this->copy('routes.tpl', 'config/routes.php');
+            $this->copy('welcome.tpl', 'controllers/welcome.php');
         }
     }
 
@@ -163,6 +165,6 @@ class MC_CLI_Project {
      * @return  string
      */
     protected function read($tpl) {
-        return file_get_contents(SYSDIR . DIRECTORY_SEPARATOR . $this->tpl_dir . DIRECTORY_SEPARATOR . $tpl);
+        return file_get_contents(SYSPATH . DIRECTORY_SEPARATOR . $this->tpl_dir . DIRECTORY_SEPARATOR . $tpl);
     }
 }
