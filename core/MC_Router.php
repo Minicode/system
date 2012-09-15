@@ -32,7 +32,7 @@ class MC_Router extends MC_Object {
      * Current class name
      *
      * @access  private
-     * @var string
+     * @var     string
      */
     private $class                        = '';
 
@@ -42,7 +42,7 @@ class MC_Router extends MC_Object {
      * Current method name
      *
      * @access  private
-     * @var string
+     * @var     string
      */
     private $method                       = '';
 
@@ -52,7 +52,7 @@ class MC_Router extends MC_Object {
      * Sub-directory that contains the requested controller class
      *
      * @access  private
-     * @var string
+     * @var     string
      */
     private $directory                    = '';
 

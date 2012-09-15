@@ -42,5 +42,5 @@ if ( ! defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50300)
  */
     $DISP->call_method();
 
-// End of file index.php
+// End of file minicode.php
 // By Minicode

@@ -35,7 +35,7 @@ abstract class MC_Object {
      * Array of cached singleton objects.
      *
      * @access private
-     * @var array
+     * @var    array
      */
     private static $instances = array();
 
