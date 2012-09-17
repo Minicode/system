@@ -19,7 +19,7 @@
  * Database base class, based on the PDO
  *
  * @category      Core
- * @package       MC_URI
+ * @package       MC_DB
  * @author        Wanglong
  * @link          http://phprails.com/docs/core/mc_db
  * @since         Version 1.0
@@ -28,20 +28,24 @@
 class MC_DB extends MC_Object {
 
     /**
-     * PDO实例
+     * PDO instance
      *
      * @access  protected
      * @var     PDO
      */
     protected $db;
 
+    // --------------------------------------------------------------------
+
     /**
-     * PDO 数据资源
+     * PDO resource
      *
      * @access  protected
      * @var     PDO resource
      */
     protected $res;
+
+    // --------------------------------------------------------------------
 
     /**
      * The final SQL statement
@@ -51,6 +55,8 @@ class MC_DB extends MC_Object {
      */
     protected $sql;
 
+    // --------------------------------------------------------------------
+
     /**
      * dsn
      *
@@ -58,6 +64,8 @@ class MC_DB extends MC_Object {
      * @var     string
      */
     protected $dsn;
+
+    // --------------------------------------------------------------------
 
     /**
      * username
@@ -67,6 +75,8 @@ class MC_DB extends MC_Object {
      */
     protected $username;
 
+    // --------------------------------------------------------------------
+
     /**
      * password
      *
@@ -75,6 +85,8 @@ class MC_DB extends MC_Object {
      */
     protected $password;
 
+    // --------------------------------------------------------------------
+
     /**
      * options
      *
@@ -82,6 +94,8 @@ class MC_DB extends MC_Object {
      * @var     string
      */
     protected $options;
+
+    // --------------------------------------------------------------------
 
     /**
      * Constructor
@@ -102,6 +116,8 @@ class MC_DB extends MC_Object {
             $this->options  = $options;
         }
     }
+
+    // --------------------------------------------------------------------
 
     /**
      * Connect to the DataBase
@@ -269,7 +285,7 @@ class MC_DB extends MC_Object {
      * @return boolean
      */
     public function commit() {
-        return $this->pdo->commit();
+        return $this->db->commit();
     }
 
     // --------------------------------------------------------------------

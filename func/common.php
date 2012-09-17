@@ -87,8 +87,12 @@ if ( ! function_exists('base_url')) {
     }
 }
 
-function db($status = TRUE) {
-    
+function db(/* args */) {
+    $driver = 'mysql';
+    $class = 'MC_DB_' . $driver;
+    include SYSPATH . 'db/adapters/MC_DB_' . $class . '.php';
+    $db = new $class;
+    return $db;
 }
 
 // End of file Global.php
