@@ -49,13 +49,12 @@ function in_argv(/* options */) {
  * different operating.
  */
 
-$commands = array('migrate', 'generate');
+$commands = array('install', 'migrate', 'generate');
 
 if (empty($argv[1])) {
     die('Missing parameters! Please view the help, input \'-h\' OR \'--help\'');
 }
-
-if (strpos($argv[1], '-') === 0) {
+elseif (strpos($argv[1], '-') === 0) {
     switch ($argv[1]) {
         case '-h': case '--help':
             show_help();
@@ -79,6 +78,9 @@ if (strpos($argv[1], '-') === 0) {
 }
 elseif ( ! in_array($argv[1], $commands)) {
     create_project();
+}
+elseif ($argv[1] == 'install') {
+    install();
 }
 
 /**
@@ -120,6 +122,39 @@ function create_project() {
     $project->create();
 }
 
+function install() {
+    global $argv;
+
+    if ( ! isset($argv[2])) {
+        die('Missing parameters! Please view the install help, input \'-h\' OR \'--help\'');
+    }
+    elseif (strpos($argv[2], '-') === 0) {
+        switch ($argv[2]) {
+            case '-h': case '--help':
+                show_install_help();
+                break;
+            default:
+                # code...
+                break;
+        }
+    }
+    else {
+        include SYSPATH . 'core/MC_CLI_Install.php';
+        $project_name = empty($argv[3]) ? '' : $argv[3];
+        $install = new MC_CLI_Install($project_name);
+        $install->file_download($argv[2]);
+    }
+}
+
+function show_install_help() {
+    echo('
+Usage: mc install [library] [project]
+
+  [library]         Installation class library, the name is the underline style
+  [project]         Is empty, the default installation to the system directory
+  -h, --help        This help
+    ');
+}
 
 // END mc cli
 // By Minicode

@@ -31,26 +31,31 @@ if ( ! function_exists('PHP_MINICODE_AUTOLOAD')) {
      * @return  void
      */
     function PHP_MINICODE_AUTOLOAD($class_name) {
-        foreach (array(APPPATH, SYSPATH) as $base) {
-            foreach (array('core', 'libraries') as $path) {
-                $root = $base . $path;
+        $base_path = array(
+            APPPATH . 'libraries', 
+            APPPATH . 'models',
+            SYSPATH . 'core',
+            SYSPATH . 'lib'
+        );
 
-                if (strpos($class_name, '\\') !== false) {
-                    $namespaces = explode('\\', $class_name);
-                    $class_name  = array_pop($namespaces);
-                    $directories = array();
+        foreach ($base_path as $path) {
+            $root = $path;
 
-                    foreach ($namespaces as $directory)
-                        $directories[] = $directory;
+            if (strpos($class_name, '\\') !== false) {
+                $namespaces = explode('\\', $class_name);
+                $class_name  = array_pop($namespaces);
+                $directories = array();
 
-                    $root .= DIRECTORY_SEPARATOR . implode($directories, DIRECTORY_SEPARATOR);
-                }
+                foreach ($namespaces as $directory)
+                    $directories[] = $directory;
 
-                $file = "$root/$class_name.php";
-
-                if (file_exists($file))
-                    require $file;
+                $root .= DIRECTORY_SEPARATOR . implode($directories, DIRECTORY_SEPARATOR);
             }
+
+            $file = "$root/$class_name.php";
+
+            if (file_exists($file))
+                require $file;
         }
     }
 }
