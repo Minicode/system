@@ -93,13 +93,13 @@ elseif ($argv[1] == 'install') {
 
 function show_help() {
     echo('
-Usage: mc [args] [options]
+Usage: mc [options]
 
   [project]             Create a new project in current path
   -d                    Look for Minicode system directory
   -h, --help            This help
   -i                    PHP information
-  -r [route]            Spaces instead of segments, to simulate the url pathinfo access
+  -r <route>            Spaces instead of segments, to simulate the url pathinfo access
   -v, --version         Print the Minicode version
     ');
 }

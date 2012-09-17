@@ -33,7 +33,8 @@ class MC_Controller {
      * Call the view class assign method
      *
      * @access public
-     * @var    string
+     * @param  $key
+     * @param  $value
      */
 	public function assign(/* key, value */) {
 		call_user_func_array(array(MC_View::instance(), 'assign'), func_get_args());
@@ -43,7 +44,7 @@ class MC_Controller {
      * Call the view class render method
      *
      * @access public
-     * @var    string
+     * @param  args
      */
 	public function render(/* args */) {
 		call_user_func_array(array(MC_View::instance(), 'render'), func_get_args());

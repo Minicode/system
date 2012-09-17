@@ -87,5 +87,9 @@ if ( ! function_exists('base_url')) {
     }
 }
 
+function db($status = TRUE) {
+    
+}
+
 // End of file Global.php
 // By Minicode
