@@ -103,6 +103,7 @@ class MC_CLI_Project {
 
             $this->copy('config.tpl', 'config/config.php');
             $this->copy('routes.tpl', 'config/routes.php');
+            $this->copy('database.tpl', 'config/database.php');
             $this->copy('welcome.tpl', 'controllers/welcome.php');
         }
     }

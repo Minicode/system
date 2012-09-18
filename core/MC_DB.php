@@ -18,10 +18,11 @@
  *
  * Database base class, based on the PDO
  *
+ * @package       Minicode
  * @category      Core
- * @package       MC_DB
+ * @subpackage    MC_DB
  * @author        Wanglong
- * @link          http://phprails.com/docs/core/mc_db
+ * @link          http://minicode.org/docs/core/mc_db
  * @since         Version 1.0
  */
 
@@ -58,7 +59,7 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * dsn
+     * Dsn
      *
      * @access  protected
      * @var     string
@@ -68,7 +69,17 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * username
+     * Driver
+     *
+     * @access  protected
+     * @var     string
+     */
+    protected $driver;
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Username
      *
      * @access  protected
      * @var     string
@@ -78,7 +89,7 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * password
+     * Password
      *
      * @access  protected
      * @var     string
@@ -88,7 +99,7 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * options
+     * POD Options
      *
      * @access  protected
      * @var     string
@@ -100,14 +111,28 @@ class MC_DB extends MC_Object {
     /**
      * Constructor
      *
+     * No parameters, the use of the database configuration files 
+     * for connecting database, we recommend to do so.
+     *
      * @access  public
-     * @param   array
+     * @param   string  $dsn
+     * @param   string  $username
+     * @param   string  $password
+     * @param   array   $options
      * @return  void
      */
     public function __construct($dsn = '', $username = '', $password = '', $options = array()) {
         if (empty($dsn)) {
             $this->cfg = MC_Config::instance();
             $this->cfg->load('database');
+            $this->dsn      = self::dsn($this->cfg->dbdriver, $this->cfg->hostname, $this->cfg->database);
+            $this->driver   = $this->cfg->dbdriver;
+            $this->username = $this->cfg->username;
+            $this->password = $this->cfg->password;
+
+            // Sets the default MYSQL_ATTR_INIT_COMMAND
+            $charset = empty($this->cfg->encoding) ? 'utf8' : $this->cfg->encoding;
+            $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '{$charset}'";
         }
         else {
             $this->dsn      = $dsn;
@@ -125,8 +150,11 @@ class MC_DB extends MC_Object {
      * @access  public
      * @return  void
      */
-    public function connect() {
+    public function open() {
         $this->db = new PDO($this->dsn, $this->username, $this->password, $this->options);
+        $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+        return $this;
     }
 
     // --------------------------------------------------------------------
@@ -137,7 +165,7 @@ class MC_DB extends MC_Object {
      * @access  public
      * @return  void
      */
-    public function disconnect() {
+    public function close() {
         $this->db  = NULL;
         $this->res = NULL;
     }
@@ -147,9 +175,9 @@ class MC_DB extends MC_Object {
     /**
      * Execute SQL, to return to the new join id
      *
-     * @access public
-     * @param  string  $statement
-     * @return string
+     * @access  public
+     * @param   string  $statement
+     * @return  string
      */
     public function exec($statement) {
         if ($this->db->exec($statement)) {
@@ -165,9 +193,9 @@ class MC_DB extends MC_Object {
     /**
      * SQL query
      * 
-     * @access public
-     * @param  string $statement
-     * @return object
+     * @access  public
+     * @param   string $statement
+     * @return  object
      */
     public function query($statement) {
         $res = $this->db->query($statement);
@@ -185,9 +213,9 @@ class MC_DB extends MC_Object {
     /**
      * Prepared statement
      *
-     * @access public
-     * @param  string
-     * @return object
+     * @access  public
+     * @param   string  $statement
+     * @return  object
      */
     public function prepare($statement) {
         $res = $this->db->prepare($statement);
@@ -205,8 +233,8 @@ class MC_DB extends MC_Object {
     /**
      * Executive prepared statement
      *
-     * @access public
-     * @return bool
+     * @access  public
+     * @return  bool
      */
     public function execute() {
         if ($this->res->execute()) {
@@ -221,8 +249,8 @@ class MC_DB extends MC_Object {
     /**
      * Fetch once data, return one line
      *
-     * @access public
-     * @return mixed
+     * @access  public
+     * @return  mixed
      */
     public function fetch() {
         return $this->res->fetch();
@@ -233,8 +261,8 @@ class MC_DB extends MC_Object {
     /**
      * Fetch all data, return array
      *
-     * @access public
-     * @return array
+     * @access  public
+     * @return  array
      */
     public function fetch_all() {
         return $this->res->fetchAll();
@@ -245,8 +273,8 @@ class MC_DB extends MC_Object {
     /**
      * Last insert id
      *
-     * @access public
-     * @return string
+     * @access  public
+     * @return  string
      */
     public function last_id() {
         return $this->db->lastInsertId();
@@ -257,8 +285,8 @@ class MC_DB extends MC_Object {
     /**
      * Influence the number of rows in
      *
-     * @access public
-     * @return int
+     * @access  public
+     * @return  int
      */
     public function affect_rows() {
         return $this->res->rowCount();
@@ -269,8 +297,8 @@ class MC_DB extends MC_Object {
     /**
      * Transaction begin
      * 
-     * @access public
-     * @return boolean
+     * @access  public
+     * @return  boolean
      */
     public function begin() {
         return $this->db->beginTransaction();
@@ -281,8 +309,8 @@ class MC_DB extends MC_Object {
     /**
      * Transaction commit
      * 
-     * @access public
-     * @return boolean
+     * @access  public
+     * @return  boolean
      */
     public function commit() {
         return $this->db->commit();
@@ -293,8 +321,8 @@ class MC_DB extends MC_Object {
     /**
      * Transaction rolled back
      * 
-     * @access public
-     * @return boolean
+     * @access  public
+     * @return  boolean
      */
     public function rollback() {
         return $this->db->rollBack();
@@ -305,13 +333,13 @@ class MC_DB extends MC_Object {
     /**
      * Throw error
      * 
-     * @access public
-     * @throws error
-     * @return void
+     * @access  public
+     * @throws  error
+     * @return  void
      */
     public function error_message() {
         $msg = $this->db->errorInfo();
-        die('database error: ' . $msg[2]);
+        die('Database Error: ' . $msg[2]);
     }
 
     // --------------------------------------------------------------------
@@ -320,11 +348,11 @@ class MC_DB extends MC_Object {
      * This function is useful for bind value. 
      * You can specify the type of the value in advance with $type.
      *
-     * @access public
-     * @param  string  $key
-     * @param  string  $value
-     * @param  boolean $type
-     * @return void
+     * @access  public
+     * @param   string  $key
+     * @param   string  $value
+     * @param   boolean $type
+     * @return  void
      */
     public function bind_value($key, $value, $type = FALSE) {
         if ($type) {
@@ -354,10 +382,10 @@ class MC_DB extends MC_Object {
      * This function is useful for bind value on an array. 
      * You can specify the type of the value in advance with $types.
      *
-     * @access public
-     * @param  array $array associative array containing the values ​​to bind
-     * @param  array $types associative array with the desired value for its corresponding key in $array
-     * @return void
+     * @access  public
+     * @param   array  $array associative array containing the values ​​to bind
+     * @param   array  $types associative array with the desired value for its corresponding key in $array
+     * @return  void
      */
     public function bind_values($array, $types = FALSE) {
         foreach ($array as $key => $value) {
@@ -375,8 +403,8 @@ class MC_DB extends MC_Object {
     /**
      * Access database version information
      *
-     * @access public
-     * @return string
+     * @access  public
+     * @return  string
      */
     public function get_version(){
         return $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -385,13 +413,41 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
+     * Generates a adaptive DSN
+     *
+     * @static
+     * @access  public
+     * @param   string  $dbdriver
+     * @param   string  $hostname
+     * @param   string  $database
+     * @return  string
+     */
+    public static function dsn($dbdriver, $hostname, $database) {
+        switch ($dbdriver) {
+            case 'mysql':
+                $dsn = $dbdriver . ":dbname={$database};host={$hostname}";
+                break;
+            
+            default:
+                $dsn = $dbdriver . ":dbname={$database};host={$hostname}";
+                break;
+        }
+        return $dsn;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Get PDO support database
      *
      * @static
-     * @access public
-     * @return string
+     * @access  public
+     * @return  string
      */
     public static function get_support_drivers(){
         return PDO::getAvailableDrivers();
     }
 }
+
+// END MC_DB Class
+// By Minicode

@@ -121,11 +121,11 @@
     }
 
     if (($_temp = realpath($system_path)) !== FALSE) {
-        $system_path = $_temp.'/';
+        $system_path = $_temp . '/';
     }
     else {
         // Ensure there's a trailing slash
-        $system_path = rtrim($system_path, '/').'/';
+        $system_path = rtrim($system_path, '/') . '/';
     }
 
     // Is the system path correct?
@@ -160,15 +160,15 @@
             $application_folder = $_temp;
         }
 
-        define('APPPATH', $application_folder.'/');
+        define('APPPATH', $application_folder . DIRECTORY_SEPARATOR);
     }
     else {
-        if ( ! is_dir(SYSPATH.$application_folder.'/')) {
+        if ( ! is_dir(BASEPATH.$application_folder . DIRECTORY_SEPARATOR)) {
             header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
             die('Your application folder path does not appear to be set correctly. Please open the following file and correct this: '.ROOT);
         }
 
-        define('APPPATH', SYSPATH.$application_folder.'/');
+        define('APPPATH', BASEPATH . $application_folder . DIRECTORY_SEPARATOR);
     }
 
 /*
@@ -180,5 +180,5 @@
  */
 require_once SYSPATH . 'minicode.php';
 
-// End of file minicode.php
+// End of file index.php
 // By Minicode

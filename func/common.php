@@ -87,13 +87,63 @@ if ( ! function_exists('base_url')) {
     }
 }
 
-function db(/* args */) {
-    $driver = 'mysql';
-    $class = 'MC_DB_' . $driver;
-    include SYSPATH . 'db/adapters/MC_DB_' . $class . '.php';
-    $db = new $class;
-    return $db;
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('db')) {
+
+    /**
+     * Database global fast interface
+     *
+     * Usually direct call db() can get a database object and connect
+     * it, it comes from the MC_DB (based on the PDO). The default 
+     * connection parameters using database configuration file.
+     *
+     * This object joined cache can be repeated use, you can use it to 
+     * do any bottom even complex database operation.
+     *
+     * We have to create a database adapter, in order to ensure high-level 
+     * interface (or packaging SQL) can be applied in any database type
+     * without the need to change your code.
+     *
+     * If this function to join complete parameters, will attempt to create 
+     * a new MC_DB_Driver object, connected to the new database connection.
+     *
+     * @param   string  $dsn
+     * @param   string  $username
+     * @param   string  $password
+     * @param   array   $options
+     * @return  object  MC_DB_Driver
+     */
+    function &db($dsn = '', $username = '', $password = '', $options = array()) {
+        static $is_included = FALSE;
+        static $databases   = array();
+
+        if ( ! $is_included) {
+            require SYSPATH . 'db' . DIRECTORY_SEPARATOR . 'MC_DB_Driver.php';
+            $is_included = TRUE;
+        }
+
+        if (empty($dsn)) {
+
+            if ( ! isset($databases[0])) {
+                $databases[0] = new MC_DB_Driver;
+                $databases[0]->open()->factory();
+            }
+
+            return $databases[0];
+        }
+
+        $identifer = md5($dsn . $username);
+
+        if ( ! isset($databases[$identifer])) {
+            $databases[$identifer] = new MC_DB_Driver($dsn, $username, $password, $options);
+            $databases[$identifer]->open()->factory();
+        }
+
+        return $databases[$identifer];
+    }
 }
 
-// End of file Global.php
+// End of file common.php
 // By Minicode

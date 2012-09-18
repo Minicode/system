@@ -82,23 +82,25 @@ class MC_Config extends MC_Object {
     /**
      * Load Config File
      *
+     * @access  public
      * @param   string  the config file name
      * @param   string  in configuration files define an array variable name
      * @param   bool    if configuration values should be loaded into their own section
      * @param   bool    true if errors should just return false, false if an error message should be displayed
      * @return  bool    if the file was loaded correctly
      */
-    public function load($file = '', $assign = 'config', $use_sections = FALSE, $fail_gracefully = FALSE) {
-        $file = ($file === '') ? 'config' : str_replace('.php', '', $file);
-        $found = $loaded = FALSE;
+    public function load($file = '', $assign = '', $use_sections = FALSE, $fail_gracefully = FALSE) {
+        $file   = ($file === '') ? 'config' : str_replace('.php', '', $file);
+        $assign = empty($assign) ? $file : $assign;
+        $found  = $loaded = FALSE;
         
         $check_locations = defined('ENVIRONMENT')
-            ? array(ENVIRONMENT.'/'.$file, $file)
+            ? array(ENVIRONMENT. DIRECTORY_SEPARATOR . $file, $file)
             : array($file);
 
         foreach ($this->config_paths as $path) {
             foreach ($check_locations as $location) {
-                $file_path = $path.'config/'.$location.'.php';
+                $file_path = $path . 'config' . DIRECTORY_SEPARATOR . $location . '.php';
 
                 if (in_array($file_path, $this->is_loaded, TRUE)) {
                     $loaded = TRUE;
@@ -160,6 +162,7 @@ class MC_Config extends MC_Object {
     /**
      * Create a new config sub-object
      *
+     * @access  public
      * @param   string  section name
      * @return  object
      */
@@ -172,6 +175,7 @@ class MC_Config extends MC_Object {
     /**
      * Fetch a config file item
      *
+     * @access  public
      * @param   string  the config item name
      * @param   string  the index name
      * @return  string
@@ -189,6 +193,7 @@ class MC_Config extends MC_Object {
     /**
      * Set a config file item
      *
+     * @access  public
      * @param   string  the config item key
      * @param   string  the config item value
      * @return  void
@@ -246,6 +251,7 @@ class MC_ConfigSection {
     /**
      * Fetch a section config file item
      *
+     * @access  public
      * @param   string  the section config item name
      * @return  string
      */
@@ -257,5 +263,6 @@ class MC_ConfigSection {
         return isset($this->config[$item]) ? $this->config[$item] : FALSE;
     }
 }
+
 // END MC_Config Class
 // By Minicode

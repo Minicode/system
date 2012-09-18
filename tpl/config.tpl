@@ -81,15 +81,15 @@ $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
  * Session Variables
  *--------------------------------------------------------------------------
  *
- * 'sess_expiration'			= the number of SECONDS you want the session to last.
+ * 'sess_expiration'      = the number of SECONDS you want the session to last.
  *   by default sessions last 7200 seconds (two hours).  Set to zero for no expiration.
- * 'sess_expire_on_close'	= Whether to cause the session to expire automatically
+ * 'sess_expire_on_close' = Whether to cause the session to expire automatically
  *   when the browser window is closed
- * 'sess_use_database'		= Whether to save the session data to a database
- * 'sess_table_name'			= The name of the session database table
- * 'sess_match_ip'			= Whether to match the user's IP address when reading the session data
- * 'sess_match_useragent'	= Whether to match the User Agent when reading the session data
- * 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
+ * 'sess_use_database'    = Whether to save the session data to a database
+ * 'sess_table_name'      = The name of the session database table
+ * 'sess_match_ip'        = Whether to match the user's IP address when reading the session data
+ * 'sess_match_useragent' = Whether to match the User Agent when reading the session data
+ * 'sess_time_to_update'  = how many seconds between CI refreshing Session Information
  */
 
 $config['sess_expiration']		= 7200;

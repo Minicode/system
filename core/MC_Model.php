@@ -25,46 +25,7 @@
  * @since         Version 1.0
  */
 
-class MC_Model extends MC_DB {
+class MC_Model {
 
-    public function select() {
-        
-    }
-
-    public function update() {
-
-    }
-
-    public function delete() {
-
-    }
-
-    public function insert($table_name, $data) {
-        if (!isset($data[0])) {
-            $data = array($data);
-        }
-        
-        $keys   = array_keys($data[0]);
-        $fields = implode(',', $keys);
-        $values = array();
-
-        for ($i=0, $l=count($data); $i<$l; $i++) {
-            $vals = array_values($data[$i]);
-            $vals = array_map(function($source){
-                if (is_numeric($source)) {
-                    return $source;
-                }
-                else {
-                    return "'" . addslashes($source) . "'";
-                }
-            }, $vals);
-
-            $values[] = '(' . implode(',', $vals) . ')';
-        }
-
-        $cont = implode(',', $values);
-        $sql = "INSERT INTO $table_name ($fields) VALUES $cont";
-
-        return $this->exec($sql);
-    }
+   
 }
