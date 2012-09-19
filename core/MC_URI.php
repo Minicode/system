@@ -147,7 +147,7 @@ class MC_URI extends MC_Object {
             return $this->uri_string;
         }
 
-        $path = (isset($_SERVER[$uri])) ? $_SERVER[$uri] : @getenv($uri);
+        $path = isset($_SERVER[$uri]) ? $_SERVER[$uri] : @getenv($uri);
         $this->set_uri_string($path);
 
         return $this->uri_string;

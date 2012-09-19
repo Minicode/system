@@ -51,12 +51,12 @@ class MC_DB_Driver extends MC_DB {
     public function factory() {
         $self     = dirname(__FILE__);
         $drivers  = $self . DIRECTORY_SEPARATOR . 'drivers';
-        $protocol = $self . DIRECTORY_SEPARATOR . 'MC_DB_DriverProtocol.php';
+        $protocol = $self . DIRECTORY_SEPARATOR . 'MC_DB_Base.php';
         $class    = 'MC_DB_' . $this->driver;
         $adapter  = $drivers . DIRECTORY_SEPARATOR . $class . '.php';
 
         if ( ! file_exists($protocol)) {
-            die('Not Found MC_DB_DriverProtocol.php file');
+            die('Not Found MC_DB_Base.php file');
         }
 
         if ( ! file_exists($adapter)) {
@@ -71,16 +71,122 @@ class MC_DB_Driver extends MC_DB {
     // --------------------------------------------------------------------
 
     /**
+     * SQL statement execution
+     *
+     * Direct returns a data set, multiple data set to return 
+     * to a two dimensional array.
+     * Not SELECT query the will not receive any data set, 
+     * returns an empty array
+     *
+     * @access  public
+     * @param   string  $sql
+     * @param   array   $bind
+     * @param   boolean $all
+     * @return  array
+     */
+    public function sql($sql = '', $bind = array(), $all = TRUE) {
+        $this->prepare($sql);
+        $this->bind_values($bind);
+        $this->execute();
+        return $all ? $this->fetch_all() : $this->fetch();
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Obtain one data
+     *
+     * @access  public
+     * @param   string  $table_name
+     * @param   array   $options
+     * @param   array   $bind
+     * @return  array
+     */
+    public function one($table_name, $options = array(), $bind = array()) {
+        $sql = $this->adapter->select_by_sql($table_name, $options);
+        return $this->sql($sql, $bind, FALSE);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Obtain all data
+     *
+     * @access  public
+     * @param   string  $table_name
+     * @param   array   $options
+     * @param   array   $bind
+     * @return  array
+     */
+    public function all($table_name, $options = array(), $bind = array()) {
+        $sql = $this->adapter->select_by_sql($table_name, $options);
+        return $this->sql($sql, $bind);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Update data for SQL
+     *
+     * @access  public
+     * @param   string  $table_name
+     * @param   array   $data
+     * @param   array   $options
+     * @return  string
+     */
+    public function update($table_name, $data, $options = array(), $bind = array()) {
+        $sql = $this->adapter->update_by_sql($table_name, $data, $options);
+        return $this->exec($sql);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Insert new data
      *
      * @access  public
      * @param   string  $table_name
      * @param   array   $data
-     * @return  void
+     * @return  int
      */
     public function insert($table_name, $data) {
         $sql = $this->adapter->insert_by_sql($table_name, $data);
-        $this->exec($sql);
+        return $this->exec($sql);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Delete data for SQL
+     *
+     * @access  public
+     * @param   string  $table_name
+     * @param   array   $options
+     * @return  string
+     */
+    public function delete($table_name, $options = array()) {
+        $sql = $this->adapter->delete_by_sql($table_name, $options);
+        return $this->exec($sql);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Recordable compact type insert new data.
+     * Support multiple lines parallel insert.
+     * When insertion if there is only one primary key or unqiue index 
+     * repetition will cease insert and change into update operation.
+     * Note: must guarantee that each set of data with the same number 
+     * and types of key value on, or ignore the data insertion.
+     *
+     * @access  public
+     * @param   string  $table_name
+     * @param   array   $data
+     * @return  string
+     */
+    public function insert_duplicate($table_name, $data) {
+        $sql = $this->adapter->insert_duplicate_by_sql($table_name, $data);
+        return $this->exec($sql);
     }
 }
 

@@ -39,12 +39,12 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * PDO resource
+     * PDOStatement
      *
      * @access  protected
-     * @var     PDO resource
+     * @var     PDOStatement
      */
-    protected $res;
+    protected $stm;
 
     // --------------------------------------------------------------------
 
@@ -133,6 +133,7 @@ class MC_DB extends MC_Object {
             // Sets the default MYSQL_ATTR_INIT_COMMAND
             $charset = empty($this->cfg->encoding) ? 'utf8' : $this->cfg->encoding;
             $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '{$charset}'";
+            $this->options[PDO::ATTR_PERSISTENT] = $this->cfg->pconnect;
         }
         else {
             $this->dsn      = $dsn;
@@ -167,40 +168,51 @@ class MC_DB extends MC_Object {
      */
     public function close() {
         $this->db  = NULL;
-        $this->res = NULL;
+        $this->stm = NULL;
+        $this->sql = NULL;
     }
 
     // --------------------------------------------------------------------
 
     /**
-     * Execute SQL, to return to the new join id
+     * Execute SQL, executes an SQL statement in a single function call, 
+     * returning the number of rows affected by the statement.
+     *
+     * Statement execution failure won't throw an exception.
+     *
+     * exec() directly execute SQL statement, won't get any result set.
+     * Bottom SQL operation, suitable for complex of the statement.
+     * exec() can only be used on INSERT, UPDATE and DELETE operation, 
+     * should not be used to SELECT query. 
      *
      * @access  public
      * @param   string  $statement
-     * @return  string
+     * @return  int or FALSE
      */
     public function exec($statement) {
-        if ($this->db->exec($statement)) {
-            $this->sql = $statement;
-            return $this->last_id();
-        }
-
-        $this->error_message();
+        return $this->db->exec($statement);
     }
 
     // --------------------------------------------------------------------
 
     /**
      * SQL query
+     *
+     * Execute a query, only after the success can be achieved 
+     * the result set, failure throw an exception.
+     *
+     * Suggested only SELECT query when use it, other INSERT, 
+     * UPDATE or DELETE operation recommend using exec or prepare 
+     * and execute.
      * 
      * @access  public
      * @param   string $statement
-     * @return  object
+     * @return  object or Error
      */
     public function query($statement) {
-        $res = $this->db->query($statement);
-        if ($res) {
-            $this->res = $res;
+        $stm = $this->db->query($statement);
+        if ($stm) {
+            $this->stm = $stm;
             $this->sql = $statement;
             return $this;
         }
@@ -211,21 +223,22 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * Prepared statement
+     * Prepared SQL statement
+     *
+     * Advance preparation a SQL statement and immediately get a 
+     * preprocessing the result set. No matter whether it is right 
+     * or not.
+     *
+     * We recommend in any case are using it !!!
      *
      * @access  public
      * @param   string  $statement
      * @return  object
      */
     public function prepare($statement) {
-        $res = $this->db->prepare($statement);
-        if ($res) {
-            $this->res = $res;
-            $this->sql = $statement;
-            return $this;
-        }
-
-        $this->error_message();
+        $this->stm = $this->db->prepare($statement);
+        $this->sql = $statement;
+        return $this;
     }
 
     // --------------------------------------------------------------------
@@ -233,15 +246,14 @@ class MC_DB extends MC_Object {
     /**
      * Executive prepared statement
      *
+     * Execution of prepared SQL result set, it can fault-tolerant, 
+     * if query for failure is empty the result set.
+     *
      * @access  public
      * @return  bool
      */
     public function execute() {
-        if ($this->res->execute()) {
-            return TRUE;
-        }
-
-        $this->error_message();
+        return @$this->stm->execute();
     }
 
     // --------------------------------------------------------------------
@@ -253,7 +265,7 @@ class MC_DB extends MC_Object {
      * @return  mixed
      */
     public function fetch() {
-        return $this->res->fetch();
+        return $this->stm->fetch();
     }
 
     // --------------------------------------------------------------------
@@ -265,7 +277,7 @@ class MC_DB extends MC_Object {
      * @return  array
      */
     public function fetch_all() {
-        return $this->res->fetchAll();
+        return $this->stm->fetchAll();
     }
 
     // --------------------------------------------------------------------
@@ -283,13 +295,19 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
-     * Influence the number of rows in
+     * Returns the number of rows affected by the last DELETE, INSERT, 
+     * or UPDATE statement executed by the corresponding PDOStatement object.
+     * If the last SQL statement executed by the associated PDOStatement was 
+     * a SELECT statement, some databases may return the number of rows 
+     * returned by that statement. However, this behaviour is not guaranteed 
+     * for all databases and should not be relied on for portable applications.
+     * (Note: exec() invalid, because it won't get the result set)
      *
      * @access  public
      * @return  int
      */
     public function affect_rows() {
-        return $this->res->rowCount();
+        return $this->stm ? $this->stm->rowCount() : 0;
     }
 
     // --------------------------------------------------------------------
@@ -356,7 +374,7 @@ class MC_DB extends MC_Object {
      */
     public function bind_value($key, $value, $type = FALSE) {
         if ($type) {
-            $this->res->bindValue($key, $value, $type);
+            $this->stm->bindValue($key, $value, $type);
         }
         else {
             if (is_int($value))
@@ -371,7 +389,7 @@ class MC_DB extends MC_Object {
                 $param = FALSE;
                 
             if ($param) {
-                $this->res->bindValue($key, $value, $param);
+                $this->stm->bindValue($key, $value, $param);
             }
         }
     }
@@ -390,10 +408,10 @@ class MC_DB extends MC_Object {
     public function bind_values($array, $types = FALSE) {
         foreach ($array as $key => $value) {
             if ($types) {
-                $this->bind_value("$key", $value, $types[$key]);
+                $this->bind_value($key, $value, $types[$key]);
             }
             else {
-                $this->bind_value("$key", $value);
+                $this->bind_value($key, $value);
             }
         }
     }
@@ -406,7 +424,7 @@ class MC_DB extends MC_Object {
      * @access  public
      * @return  string
      */
-    public function get_version(){
+    public function version(){
         return $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
     }
 
@@ -444,7 +462,7 @@ class MC_DB extends MC_Object {
      * @access  public
      * @return  string
      */
-    public static function get_support_drivers(){
+    public static function support_drivers(){
         return PDO::getAvailableDrivers();
     }
 }
