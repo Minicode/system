@@ -25,7 +25,7 @@
  * @since         Version 1.0
  */
 
-class MC_Model {
+class MC_Model {}
 
-   
-}
+// END MC_Model Class
+// By Minicode

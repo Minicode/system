@@ -42,8 +42,8 @@ class MC_DB_Driver extends MC_DB {
      * Factory, An object it only exec once
      *
      * We have to create a database adapter, in order to ensure high-level 
-     * interface (or packaging SQL) can be applied in any database type
-     * without the need to change your code.
+     * interface (or packaging SQL) can be applied in any database type without 
+     * the need to change your code or change a small amount of code.
      *
      * @access  public
      * @return  void
@@ -94,7 +94,7 @@ class MC_DB_Driver extends MC_DB {
     // --------------------------------------------------------------------
 
     /**
-     * Obtain one data
+     * Obtain one data for options
      *
      * @access  public
      * @param   string  $table_name
@@ -110,7 +110,7 @@ class MC_DB_Driver extends MC_DB {
     // --------------------------------------------------------------------
 
     /**
-     * Obtain all data
+     * Obtain all data for options
      *
      * @access  public
      * @param   string  $table_name
@@ -126,15 +126,15 @@ class MC_DB_Driver extends MC_DB {
     // --------------------------------------------------------------------
 
     /**
-     * Update data for SQL
+     * UPDATE data for options
      *
      * @access  public
      * @param   string  $table_name
      * @param   array   $data
      * @param   array   $options
-     * @return  string
+     * @return  int or FALSE
      */
-    public function update($table_name, $data, $options = array(), $bind = array()) {
+    public function update($table_name, $data, $options = array()) {
         $sql = $this->adapter->update_by_sql($table_name, $data, $options);
         return $this->exec($sql);
     }
@@ -142,12 +142,12 @@ class MC_DB_Driver extends MC_DB {
     // --------------------------------------------------------------------
 
     /**
-     * Insert new data
+     * INSERT new data
      *
      * @access  public
      * @param   string  $table_name
      * @param   array   $data
-     * @return  int
+     * @return  int or FALSE
      */
     public function insert($table_name, $data) {
         $sql = $this->adapter->insert_by_sql($table_name, $data);
@@ -157,35 +157,15 @@ class MC_DB_Driver extends MC_DB {
     // --------------------------------------------------------------------
 
     /**
-     * Delete data for SQL
+     * DELETE data for options
      *
      * @access  public
      * @param   string  $table_name
      * @param   array   $options
-     * @return  string
+     * @return  int or FALSE
      */
     public function delete($table_name, $options = array()) {
         $sql = $this->adapter->delete_by_sql($table_name, $options);
-        return $this->exec($sql);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Recordable compact type insert new data.
-     * Support multiple lines parallel insert.
-     * When insertion if there is only one primary key or unqiue index 
-     * repetition will cease insert and change into update operation.
-     * Note: must guarantee that each set of data with the same number 
-     * and types of key value on, or ignore the data insertion.
-     *
-     * @access  public
-     * @param   string  $table_name
-     * @param   array   $data
-     * @return  string
-     */
-    public function insert_duplicate($table_name, $data) {
-        $sql = $this->adapter->insert_duplicate_by_sql($table_name, $data);
         return $this->exec($sql);
     }
 }

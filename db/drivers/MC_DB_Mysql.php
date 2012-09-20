@@ -16,7 +16,7 @@
 /**
  * MC_DB_Mysql Class
  *
- * Mysql database SQL drive
+ * Mysql database SQL builder drive
  *
  * @package       Minicode
  * @category      DB
@@ -29,11 +29,10 @@
 class MC_DB_Mysql extends MC_DB_Base {
 
     /**
-     * Select data for SQL
+     * Basic SELECT statement integration for SQL String
      *
      * @access  public
      * @param   string  $table_name
-     * @param   array   $data
      * @param   array   $options
      * @return  string
      */
@@ -48,7 +47,7 @@ class MC_DB_Mysql extends MC_DB_Base {
         $start  = empty($options['start'])  ? 0   : $options['start'];
         $limit  = empty($options['limit'])  ? ''  : $options['limit'];
 
-        if ($from !== '') {
+        if ($from === '') {
             $from   = $table_name;
         }
 
@@ -76,7 +75,7 @@ class MC_DB_Mysql extends MC_DB_Base {
     // --------------------------------------------------------------------
 
     /**
-     * Update data for SQL
+     * Basic UPDATE statement integration for SQL String
      *
      * @access  public
      * @param   string  $table_name
@@ -104,7 +103,7 @@ class MC_DB_Mysql extends MC_DB_Base {
     // --------------------------------------------------------------------
 
     /**
-     * Insert new data for SQL
+     * Basic INSERT statement integration for SQL String
      *
      * @access  public
      * @param   string  $table_name
@@ -131,7 +130,7 @@ class MC_DB_Mysql extends MC_DB_Base {
     // --------------------------------------------------------------------
 
     /**
-     * Delete data for SQL
+     * Basic DELETE statement integration for SQL String
      *
      * @access  public
      * @param   string  $table_name
@@ -140,33 +139,7 @@ class MC_DB_Mysql extends MC_DB_Base {
      */
     public function delete_by_sql($table_name, $options) {
         $where  = empty($options['where'])  ? '1' : $options['where'];
-        return "DELETE FROM {$table_name} WHERE {$where}";
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Recordable compact type insert new data.
-     * Support multiple lines parallel insert.
-     * When insertion if there is only one primary key or unqiue index 
-     * repetition will cease insert and change into update operation.
-     * Note: must guarantee that each set of data with the same number 
-     * and types of key value on, or ignore the data insertion.
-     *
-     * @access  public
-     * @param   string  $table_name
-     * @param   array   $data
-     * @return  string
-     */
-    public function insert_duplicate_by_sql($table_name, $data) {
-        $sql  = $this->insert_by_sql($table_name, $data);
-        $keys = array_keys(isset($data[0]) ? $data[0] : $data);
-
-        foreach ($keys as $i => $value) {
-            $update[] = "$value = VALUES($value)";
-        }
-        
-        return $sql . " ON DUPLICATE KEY UPDATE" . implode(',', $update);
+        return "DELETE FROM {$table_name} WHERE {$where} MERGE";
     }
 }
 
