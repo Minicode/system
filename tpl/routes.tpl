@@ -11,10 +11,10 @@
  * @link          http://minicode.org
  */
 
-// ------------------------------------------------------------------------
-
 /**
+ *--------------------------------------------------------------------------
  * URI ROUTING
+ *--------------------------------------------------------------------------
  *
  * This file lets you re-map URI requests to specific controller functions.
  * Typically there is a one-to-one relationship between a URL string

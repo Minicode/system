@@ -87,6 +87,46 @@ if ( ! function_exists('base_url')) {
     }
 }
 
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('import')) {
+
+    /**
+     * Package import function
+     *
+     * This function will include the current project in the directory 
+     * specified directory file, if not find the file, it will try to 
+     * in this name directory to find this file, if there is no returns 
+     * FALSE, returning TRUE success.
+     *
+     * The second parameter search specified directory. The default 
+     * is "helpers", if there is no this directory, please hand create.
+     *
+     * @param   string  $name
+     * @param   string  $directory
+     * @return  boolean
+     */
+    function import($name = '', $directory = 'helpers') {
+        static $loaded = array();
+
+        if ( ! isset($loaded[$directory . '/' . $name])) {
+            $path = APPPATH . $directory . '/' . $name . '.php';
+            if ( ! file_exists($path)) {
+
+                $path = APPPATH . $directory . '/' . $name . '/' .  $name . '.php';
+
+                if ( ! file_exists($path)) {
+                    return FALSE;
+                }
+            }
+
+            require $path;
+            $loaded[$directory . '/' . $name] = TRUE;
+        }
+       
+        return TRUE;
+    }
+}
 
 // ------------------------------------------------------------------------
 

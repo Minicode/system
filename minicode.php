@@ -12,7 +12,7 @@
  */
 
 if ( ! defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50300)
-    die('Minicode framework requires PHP 5.3 or higher');
+    die('Your current PHP version is ' . PHP_VERSION . ' , but Minicode framework requires PHP 5.3.0 or higher.');
 
 /*
  * ------------------------------------------------------

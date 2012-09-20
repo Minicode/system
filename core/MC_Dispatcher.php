@@ -87,15 +87,15 @@ class MC_Dispatcher {
     public function call_method() {
         $this->action_filter('before_filter');
 
-        if (method_exists($this->controller, 'remap')) {
-            $this->method = 'remap';
+        if (method_exists($this->controller, '_remap')) {
+            $this->method = '_remap';
         }
         else {
             // is_callable() returns TRUE on some versions of PHP 5 for private and protected
             // methods, so we'll use this workaround for consistent behavior
             if ( ! in_array(strtolower($this->method), $this->class_methods)) {
-                if (method_exists($this->controller, 'missing')) {
-                    $this->method = 'missing';
+                if (method_exists($this->controller, '_missing')) {
+                    $this->method = '_missing';
                 }
                 else {
                     $this->reform_override_404();

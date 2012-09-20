@@ -20,11 +20,11 @@
  * URI string.  The default setting of 'AUTO' works for most servers.
  * If your links do not seem to work, try one of the other delicious flavors:
  *
- * 'AUTO'			Default - auto detects
- * 'PATH_INFO'		Uses the PATH_INFO
- * 'QUERY_STRING'	Uses the QUERY_STRING
- * 'REQUEST_URI'	Uses the REQUEST_URI
- * 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
+ * 'AUTO'           Default - auto detects
+ * 'PATH_INFO'      Uses the PATH_INFO
+ * 'QUERY_STRING'   Uses the QUERY_STRING
+ * 'REQUEST_URI'    Uses the REQUEST_URI
+ * 'ORIG_PATH_INFO' Uses the ORIG_PATH_INFO
  */
 
 $config['uri_protocol']	= 'AUTO';
@@ -75,46 +75,6 @@ $config['url_suffix'] = '';
  */
 
 $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
-
-/**
- *--------------------------------------------------------------------------
- * Session Variables
- *--------------------------------------------------------------------------
- *
- * 'sess_expiration'      = the number of SECONDS you want the session to last.
- *   by default sessions last 7200 seconds (two hours).  Set to zero for no expiration.
- * 'sess_expire_on_close' = Whether to cause the session to expire automatically
- *   when the browser window is closed
- * 'sess_use_database'    = Whether to save the session data to a database
- * 'sess_table_name'      = The name of the session database table
- * 'sess_match_ip'        = Whether to match the user's IP address when reading the session data
- * 'sess_match_useragent' = Whether to match the User Agent when reading the session data
- * 'sess_time_to_update'  = how many seconds between CI refreshing Session Information
- */
-
-$config['sess_expiration']		= 7200;
-$config['sess_expire_on_close']	= FALSE;
-$config['sess_use_database']	= FALSE;
-$config['sess_table_name']		= 'mc_sessions';
-$config['sess_match_ip']		= FALSE;
-$config['sess_match_useragent']	= TRUE;
-$config['sess_time_to_update']	= 300;
-
-/**
- *--------------------------------------------------------------------------
- * Cookie Related Variables
- *--------------------------------------------------------------------------
- *
- * 'cookie_prefix' = Set a prefix if you need to avoid collisions
- * 'cookie_domain' = Set to .your-domain.com for site-wide cookies
- * 'cookie_path'   =  Typically will be a forward slash
- * 'cookie_secure' =  Cookies will only be set if a secure HTTPS connection exists.
- */
-
-$config['cookie_prefix']	= "";
-$config['cookie_domain']	= "";
-$config['cookie_path']		= "/";
-$config['cookie_secure']	= FALSE;
 
 // End of file config.php
 // By Minicode
