@@ -30,7 +30,7 @@
         // For the sake of safety, can set up and web 
         // directory different path, can multiple applications 
         // share a system core. eg: '/usr/local/minicode'
-        'production'  => 'minicode',
+        'production'  => '{#system_dir#}',
 
         // Used for online test environment
         'testing'     => ''

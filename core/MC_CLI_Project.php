@@ -70,7 +70,7 @@ class MC_CLI_Project {
      */
     public function __construct($name = 'app') {
         $this->name        = $name;
-        $this->system_path = dirname(SYSPATH) == PWD ? SYSDIR : SYSPATH;
+        $this->system_path = dirname(SYSPATH) == PWD ? SYSDIR : rtrim(SYSPATH, DIRECTORY_SEPARATOR);
     }
 
     // --------------------------------------------------------------------
@@ -86,6 +86,7 @@ class MC_CLI_Project {
         if($this->mkdir($this->name, 0)) {
             $str = $this->read('index.tpl');
             $str = str_replace('{#system_path#}', $this->system_path, $str);
+            $str = str_replace('{#system_dir#}', SYSDIR, $str);
             $str = str_replace('{#application_folder#}', $this->name, $str);
             $index_file = file_exists('index.php') ? $this->name : 'index';
             file_put_contents($index_file  . '.php', $str);

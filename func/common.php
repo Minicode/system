@@ -36,9 +36,12 @@ if ( ! function_exists('PHP_MINICODE_AUTOLOAD')) {
 
         if ( ! $base_paths) {
             $cfg = config();
-            $ext_paths = isset($cfg['autoload_paths_ext']) ? $cfg['autoload_paths_ext'] : array();
-            $ext_paths = array_map(function($source) {
-                return APPPATH . $source;
+            $ext_paths = isset($cfg['autoload_paths_ext']) 
+                        ? $cfg['autoload_paths_ext'] 
+                        : array();
+
+            $ext_paths = array_map(function($value) {
+                return APPPATH . $value;
             }, $ext_paths);
 
             $base_paths = array_merge(
