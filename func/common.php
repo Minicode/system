@@ -12,10 +12,11 @@
  */
 
 /**
- * Common Functions
+ * Common Functions ( Very Important !!! )
  *
  * System Common function library, the Minicode 
- * framework of the necessary file
+ * framework of the necessary file. Some of the 
+ * core class library also need it.
  *
  * @package       Minicode
  * @category      Global Functions
@@ -31,14 +32,26 @@ if ( ! function_exists('PHP_MINICODE_AUTOLOAD')) {
      * @return  void
      */
     function PHP_MINICODE_AUTOLOAD($class_name) {
-        $base_path = array(
-            APPPATH . 'libraries', 
-            APPPATH . 'models',
-            SYSPATH . 'core',
-            SYSPATH . 'lib'
-        );
+        static $base_paths;
 
-        foreach ($base_path as $path) {
+        if ( ! $base_paths) {
+            $cfg = config();
+            $ext_paths = isset($cfg['autoload_paths_ext']) ? $cfg['autoload_paths_ext'] : array();
+            $ext_paths = array_map(function($source) {
+                return APPPATH . $source;
+            }, $ext_paths);
+
+            $base_paths = array_merge(
+                array(
+                    APPPATH . 'libraries', 
+                    APPPATH . 'models',
+                    SYSPATH . 'core',
+                    SYSPATH . 'lib'
+                ), $ext_paths
+            );
+        }
+
+        foreach ($base_paths as $path) {
             $root = $path;
 
             if (strpos($class_name, '\\') !== false) {
@@ -102,18 +115,18 @@ if ( ! function_exists('import')) {
      * The second parameter search specified directory. The default 
      * is "helpers", if there is no this directory, please hand create.
      *
-     * @param   string  $name
-     * @param   string  $directory
+     * @param   string
+     * @param   string
      * @return  boolean
      */
     function import($name = '', $directory = 'helpers') {
         static $loaded = array();
 
-        if ( ! isset($loaded[$directory . '/' . $name])) {
-            $path = APPPATH . $directory . '/' . $name . '.php';
+        if ( ! isset($loaded[$directory . DIRECTORY_SEPARATOR . $name])) {
+            $path = APPPATH . $directory . DIRECTORY_SEPARATOR . $name . '.php';
             if ( ! file_exists($path)) {
 
-                $path = APPPATH . $directory . '/' . $name . '/' .  $name . '.php';
+                $path = APPPATH . $directory . DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR .  $name . '.php';
 
                 if ( ! file_exists($path)) {
                     return FALSE;
@@ -125,6 +138,53 @@ if ( ! function_exists('import')) {
         }
        
         return TRUE;
+    }
+}
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('config')) {
+
+    /**
+     * Load the specified configuration file
+     *
+     * It uses up and convenient and flexible, recommended in the 
+     * project to use it.
+     *
+     * @param   string  the config file name
+     * @param   string  in configuration files define an array variable name
+     * @return  array
+     */
+    function config($file = FALSE, $assign = FALSE) {
+        static $loaded = array();
+
+        $file = $file ? str_replace('.php', '', $file) : 'config';
+
+        if ( ! empty($loaded[$file])) {
+            return $loaded[$file];
+        }
+        
+        $check_locations = defined('ENVIRONMENT')
+            ? array(ENVIRONMENT. DIRECTORY_SEPARATOR . $file, $file)
+            : array($file);
+
+        foreach ($check_locations as $location) {
+            $file_path = APPPATH . 'config' . DIRECTORY_SEPARATOR . $location . '.php';
+
+            if (file_exists($file_path)) {
+                require_once $file_path;
+
+                $assign = $assign ? $assign : $file;
+
+                if ( ! isset($$assign) OR ! is_array($$assign)) {
+                    die('Your '.$file_path.' file does not appear to contain a valid configuration array.');
+                }
+
+                return $loaded[$file] = $$assign;
+            }
+        }
+
+        die('The configuration file '.$file.'.php does not exist.');
     }
 }
 
@@ -149,10 +209,10 @@ if ( ! function_exists('db')) {
      * If this function to join complete parameters, will attempt to create 
      * a new MC_DB_Driver object, connected to the new database connection.
      *
-     * @param   string  $dsn
-     * @param   string  $username
-     * @param   string  $password
-     * @param   array   $options
+     * @param   string
+     * @param   string
+     * @param   string
+     * @param   array
      * @return  object  MC_DB_Driver
      */
     function &db($dsn = '', $username = '', $password = '', $options = array()) {

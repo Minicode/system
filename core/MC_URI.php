@@ -84,8 +84,7 @@ class MC_URI extends MC_Object {
      * @access    public
      */
     public function __construct() {
-        $this->cfg = MC_Config::instance();
-        $this->cfg->load('config');
+        $this->cfg = config();
     }
 
     // --------------------------------------------------------------------
@@ -97,7 +96,7 @@ class MC_URI extends MC_Object {
      * @return    string
      */
     public function fetch_uri_string() {
-        if (strtoupper($this->cfg->item('uri_protocol')) == 'AUTO') {
+        if (strtoupper($this->cfg['uri_protocol']) == 'AUTO') {
             // Is the request coming from the command line?
             if (php_sapi_name() == 'cli' or defined('STDIN')) {
                 $this->set_uri_string($this->parse_cli_args());
@@ -136,7 +135,7 @@ class MC_URI extends MC_Object {
             return $this->uri_string;
         }
 
-        $uri = strtoupper($this->cfg->item('uri_protocol'));
+        $uri = strtoupper(@$this->cfg['uri_protocol']);
 
         if ($uri == 'REQUEST_URI') {
             $this->set_uri_string($this->auto_detect_uri());
@@ -380,10 +379,10 @@ class MC_URI extends MC_Object {
      * @return    string
      */
     public function filter_uri($str) {
-        if ($str !== '' && $this->cfg->item('permitted_uri_chars') != '' && $this->cfg->item('enable_query_strings') === FALSE) {
+        if ($str !== '' && ! empty($this->cfg['permitted_uri_chars']) && @$this->cfg['uri_protocol'] === 'QUERY_STRING') {
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
-            if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote($this->cfg->item('permitted_uri_chars'), '-')).']+$|i', urldecode($str))) {
+            if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote(@$this->cfg['permitted_uri_chars'], '-')).']+$|i', urldecode($str))) {
                 die('The URI you submitted has disallowed characters.');
             }
         }
@@ -428,7 +427,7 @@ class MC_URI extends MC_Object {
      * @return    void
      */
     public function remove_url_suffix() {
-        $suffix = (string) $this->cfg->item('url_suffix');
+        $suffix = (string) @$this->cfg['url_suffix'];
 
         if ($suffix !== '' && ($offset = strrpos($this->uri_string, $suffix)) !== FALSE) {
             $this->uri_string = substr_replace($this->uri_string, '', $offset, strlen($suffix));

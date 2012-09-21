@@ -68,12 +68,9 @@ class MC_Router extends MC_Object {
      * @return  void
      */
     public function __construct() {
-        $this->uri = MC_URI::instance();
-        $this->cfg = MC_Config::instance();
-        $this->cfg->load('config');
-        $this->cfg->load('routes', 'route', TRUE);
-        
-        $this->routes = $this->cfg->section('routes');
+        $this->uri    = MC_URI::instance();
+        $this->cfg    = config();
+        $this->routes = config('routes', 'route');
     }
 
     // --------------------------------------------------------------------
@@ -89,23 +86,23 @@ class MC_Router extends MC_Object {
      * @return  void
      */
     public function set_routing() {
-        // Are query strings enabled in the config file? Normally phpRails doesn't utilize query strings
+        // Are query strings enabled in the config file? Normally Minicode doesn't utilize query strings
         // since URI segments are more search-engine friendly, but they can optionally be used.
         // If this feature is enabled, we will gather the directory/class/method a little differently
         $segments = array();
-        if (strtoupper($this->cfg->uri_protocol) === 'QUERY_STRING' && isset($_GET[$this->cfg->controller_trigger])) {
-            if (isset($_GET[$this->cfg->directory_trigger])) {
-                $this->set_directory(trim($this->uri->filter_uri($_GET[$this->cfg->directory_trigger])));
+        if (strtoupper($this->cfg['uri_protocol']) === 'QUERY_STRING' && isset($_GET[$this->cfg['controller_trigger']])) {
+            if (isset($_GET[$this->cfg['directory_trigger']])) {
+                $this->set_directory(trim($this->uri->filter_uri($_GET[$this->cfg['directory_trigger']])));
                 $segments[] = $this->fetch_directory();
             }
 
-            if (isset($_GET[$this->cfg->controller_trigger])) {
-                $this->set_class(trim($this->uri->filter_uri($_GET[$this->cfg->controller_trigger])));
+            if (isset($_GET[$this->cfg['controller_trigger']])) {
+                $this->set_class(trim($this->uri->filter_uri($_GET[$this->cfg['controller_trigger']])));
                 $segments[] = $this->fetch_class();
             }
 
-            if (isset($_GET[$this->cfg->function_trigger])) {
-                $this->set_method(trim($this->uri->filter_uri($_GET[$this->cfg->function_trigger])));
+            if (isset($_GET[$this->cfg['function_trigger']])) {
+                $this->set_method(trim($this->uri->filter_uri($_GET[$this->cfg['function_trigger']])));
                 $segments[] = $this->fetch_method();
             }
         }
@@ -214,7 +211,7 @@ class MC_Router extends MC_Object {
      * @return  string
      */
     public function fetch_method() {
-        return ($this->method === $this->fetch_class()) ? $this->routes->default_action : $this->method;
+        return ($this->method === $this->fetch_class()) ? $this->routes['default_action'] : $this->method;
     }
 
     // --------------------------------------------------------------------
@@ -252,11 +249,11 @@ class MC_Router extends MC_Object {
      * @return  void
      */
     private function set_default_request() {
-        $this->set_directory($this->routes->default_directory);
-        $this->set_class($this->routes->default_controller);
-        $this->set_method($this->routes->default_action);
+        $this->set_directory($this->routes['default_directory']);
+        $this->set_class($this->routes['default_controller']);
+        $this->set_method($this->routes['default_action']);
 
-        $this->uri->set_rsegments(array($this->routes->default_controller, $this->routes->default_action));
+        $this->uri->set_rsegments(array($this->routes['default_controller'], $this->routes['default_action']));
 
         // re-index the routed segments array so it starts with 1 rather than 0
         $this->uri->reindex_segments();
@@ -291,7 +288,7 @@ class MC_Router extends MC_Object {
         else {
             // This lets the "routed" segment array identify that the default
             // index method is being used.
-            $this->set_method($segments[1] = $this->routes->default_action);
+            $this->set_method($segments[1] = $this->routes['default_action']);
         }
 
         // Update our "routed" segment array to contain the segments.
@@ -352,7 +349,7 @@ class MC_Router extends MC_Object {
             $this->set_directory($segments[0]);
             $segments = array_slice($segments, 1);
 
-            $segments[0] = count($segments) > 0 ? $segments[0] : $this->routes->default_controller;
+            $segments[0] = count($segments) > 0 ? $segments[0] : $this->routes['default_controller'];
 
             if ( ! $this->has_file($this->fetch_directory().$segments[0])) {
                 return $this->validate_override_404();
@@ -382,12 +379,12 @@ class MC_Router extends MC_Object {
         $uri = implode('/', $this->uri->segment_array());
 
         // Is there a literal match?  If so we're done
-        if ($this->routes->item($uri)) {
-            return $this->set_request(explode('/', $this->routes->item($uri)));
+        if (isset($this->routes[$uri])) {
+            return $this->set_request(explode('/', $this->routes[$uri]));
         }
 
         // Loop through the route array looking for wild-cards
-        foreach ($this->routes->item() as $key => $val) {
+        foreach ($this->routes as $key => $val) {
             // Convert wild-cards to RegEx
             $key = str_replace(array(':any', ':num'), array('.+', '[0-9]+'), $key);
 

@@ -76,5 +76,17 @@ $config['url_suffix'] = '';
 
 $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
 
+/**
+ *--------------------------------------------------------------------------
+ * Automatic loading paths extensions
+ *--------------------------------------------------------------------------
+ *
+ * Based on the original loading paths extensions, Do not suggest there 
+ * are too many extension path, this will affect retrieval performance.
+ * Note: They are all relative to the project application directory.
+ */
+
+$config['autoload_paths_ext'] = array('bases');
+
 // End of file config.php
 // By Minicode

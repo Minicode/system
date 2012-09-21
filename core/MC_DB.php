@@ -69,12 +69,32 @@ class MC_DB extends MC_Object {
     // --------------------------------------------------------------------
 
     /**
+     * Host
+     *
+     * @access  protected
+     * @var     string
+     */
+    protected $host     = 'localhost';
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Database Name
+     *
+     * @access  protected
+     * @var     string
+     */
+    protected $dbname;
+
+    // --------------------------------------------------------------------
+
+    /**
      * Driver
      *
      * @access  protected
      * @var     string
      */
-    protected $driver;
+    protected $driver   = 'mysql';
 
     // --------------------------------------------------------------------
 
@@ -84,7 +104,7 @@ class MC_DB extends MC_Object {
      * @access  protected
      * @var     string
      */
-    protected $username;
+    protected $username = 'root';
 
     // --------------------------------------------------------------------
 
@@ -123,17 +143,18 @@ class MC_DB extends MC_Object {
      */
     public function __construct($dsn = '', $username = '', $password = '', $options = array()) {
         if (empty($dsn)) {
-            $this->cfg = MC_Config::instance();
-            $this->cfg->load('database');
-            $this->dsn      = self::dsn($this->cfg->dbdriver, $this->cfg->hostname, $this->cfg->database);
-            $this->driver   = $this->cfg->dbdriver;
-            $this->username = $this->cfg->username;
-            $this->password = $this->cfg->password;
+            $this->cfg      = config('database');
+            $this->host     = empty($this->cfg['hostname']) ? $this->host : $this->cfg['hostname'];
+            $this->dbname   = empty($this->cfg['database']) ? $this->dbname : $this->cfg['database'];
+            $this->driver   = empty($this->cfg['dbdriver']) ? $this->driver : $this->cfg['dbdriver'];
+            $this->username = empty($this->cfg['username']) ? $this->username : $this->cfg['username'];
+            $this->password = empty($this->cfg['password']) ? $this->password : $this->cfg['password'];
+            $this->dsn      = self::dsn($this->driver, $this->host, $this->dbname);
 
             // Sets the default MYSQL_ATTR_INIT_COMMAND
-            $charset = empty($this->cfg->encoding) ? 'utf8' : $this->cfg->encoding;
+            $charset = empty($this->cfg['encoding']) ? 'utf8' : $this->cfg['encoding'];
             $this->options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '{$charset}'";
-            $this->options[PDO::ATTR_PERSISTENT] = $this->cfg->pconnect;
+            $this->options[PDO::ATTR_PERSISTENT] = $this->cfg['pconnect'];
         }
         else {
             $this->dsn      = $dsn;

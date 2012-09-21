@@ -121,11 +121,11 @@
     }
 
     if (($_temp = realpath($system_path)) !== FALSE) {
-        $system_path = $_temp . '/';
+        $system_path = $_temp . DIRECTORY_SEPARATOR;
     }
     else {
         // Ensure there's a trailing slash
-        $system_path = rtrim($system_path, '/') . '/';
+        $system_path = rtrim($system_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     // Is the system path correct?
@@ -143,13 +143,13 @@
     define('ROOT', pathinfo(__FILE__, PATHINFO_BASENAME));
 
     // Path to the system folder
-    define('SYSPATH', str_replace('\\', '/', $system_path));
+    define('SYSPATH', $system_path);
 
     // Path to the front controller (this file)
     define('BASEPATH', str_replace(ROOT, '', __FILE__));
 
     // Name of the "system folder"
-    define('SYSDIR', trim(strrchr(trim(SYSPATH, '/'), '/'), '/'));
+    define('SYSDIR', trim(strrchr(trim(SYSPATH, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR));
 
     // Make sure environment application folder path
     $application_folder = $application_folder[ENVIRONMENT];
