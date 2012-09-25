@@ -64,13 +64,14 @@ class MC_Dispatcher {
      * @return  void
      */
     public function __construct() {
-        $this->uri       = MC_URI::instance();
-        $this->router    = MC_Router::instance();
+        $this->uri        = MC_URI::instance();
+        $this->router     = MC_Router::instance();
         $this->router->set_routing();
 
-        $this->directory = $this->router->fetch_directory();
-        $this->class     = $this->router->fetch_class();
-        $this->method    = $this->router->fetch_method();
+        $this->directory  = $this->router->fetch_directory();
+        $this->class      = $this->router->fetch_class();
+        $this->method     = $this->router->fetch_method();
+        $this->class_file = strtolower($this->class);
 
         // check and create controller instance
         $this->security_check();
@@ -203,7 +204,7 @@ class MC_Dispatcher {
      * @return  void
      */
     private function security_check() {
-        if ( ! file_exists(APPPATH.'controllers/'.$this->directory.$this->class.'.php')) {
+        if ( ! file_exists(APPPATH.'controllers/'.$this->directory.$this->class_file.'.php')) {
             die('Unable to load your default or 404 override controller. Please make sure that the controller path is correct.');
         }
 
@@ -211,7 +212,7 @@ class MC_Dispatcher {
             $this->reform_override_404();
         }
         else {
-            include(APPPATH.'controllers/'.$this->directory.$this->class.'.php');
+            include(APPPATH.'controllers/'.$this->directory.$this->class_file.'.php');
 
             if ( ! class_exists($this->class)) {
                 die('Class \''.$this->class.'\' not found.');
@@ -240,11 +241,11 @@ class MC_Dispatcher {
         $this->method    = isset($x[1]) ? $x[1] : 'index';
 
         if ( ! class_exists($this->class)) {
-            if ( ! file_exists(APPPATH.'controllers/'.$this->directory . $this->class.'.php')) {
+            if ( ! file_exists(APPPATH.'controllers/'.$this->directory . $this->class_file.'.php')) {
                 die('Unable to load your 404 override controller. Please make sure that the controller path is correct.');
             }
 
-            include_once(APPPATH.'controllers/'.$this->directory . $this->class.'.php');
+            include_once(APPPATH.'controllers/'.$this->directory . $this->class_file.'.php');
 
             if ( ! class_exists($this->class)) {
                 die('Class \''.$this->class.'\' not found.');

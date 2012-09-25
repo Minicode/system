@@ -191,13 +191,17 @@ class MC_View extends MC_Object {
      * @return  void
      */
 	protected function defined_replace() {
-		// system constant tags are generally capital
-		$this->set_tag('BASE_URL', base_url());
+        $base_url = base_url();
+
+        // system constant tags are generally capital
+		$this->set_tag('BASE_URL', $base_url);
+        $this->set_tag('SCRIPT_URL', $base_url . SCRIPT . '/');
 		$this->set_tag('CLASS'   , $this->class);
 		$this->set_tag('METHOD'  , $this->method);
 
 		// expression tags
-		$this->set_exp('URL:\s*(.*?)', base_url() . '$1');
+		$this->set_exp('HREF:\s*(.*?)', $base_url . SCRIPT . '/' . '$1');
+        $this->set_exp('(?:SRC|LINK|URL):\s*(.*?)', $base_url . '$1');
 	}
 
 	// --------------------------------------------------------------------

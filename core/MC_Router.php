@@ -140,7 +140,7 @@ class MC_Router extends MC_Object {
 
         if (empty($x)) {
 
-            $override_404 = $this->routes->override_404;
+            $override_404 = @$this->routes['override_404'];
 
             if (empty($override_404)) {
                 die('The page you requested was not found.');

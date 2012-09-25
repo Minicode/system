@@ -30,6 +30,14 @@
 class MC_Controller {
 
     /**
+     * Constructor
+     *
+     * @access  public
+     * @return  void
+     */
+    public function __construct() {}
+
+    /**
      * Call the view class assign method
      *
      * @access public

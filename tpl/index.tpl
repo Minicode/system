@@ -140,13 +140,13 @@
  * -------------------------------------------------------------------
  */
     // The name of THIS file
-    define('ROOT', pathinfo(__FILE__, PATHINFO_BASENAME));
+    define('SCRIPT', pathinfo(__FILE__, PATHINFO_BASENAME));
 
     // Path to the system folder
     define('SYSPATH', $system_path);
 
     // Path to the front controller (this file)
-    define('BASEPATH', str_replace(ROOT, '', __FILE__));
+    define('BASEPATH', str_replace(SCRIPT, '', __FILE__));
 
     // Name of the "system folder"
     define('SYSDIR', trim(strrchr(trim(SYSPATH, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR));
@@ -165,7 +165,7 @@
     else {
         if ( ! is_dir(BASEPATH.$application_folder . DIRECTORY_SEPARATOR)) {
             header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
-            die('Your application folder path does not appear to be set correctly. Please open the following file and correct this: '.ROOT);
+            die('Your application folder path does not appear to be set correctly. Please open the following file and correct this: '.SCRIPT);
         }
 
         define('APPPATH', BASEPATH . $application_folder . DIRECTORY_SEPARATOR);
